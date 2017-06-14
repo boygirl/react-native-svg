@@ -1,15 +1,15 @@
 /**
- * Copyright (c) 2015-present, Horcrux.
- * All rights reserved.
- *
- * This source code is licensed under the MIT-style license found in the
- * LICENSE file in the root directory of this source tree.
- */
+* Copyright (c) 2015-present, Horcrux.
+* All rights reserved.
+*
+* This source code is licensed under the MIT-style license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
 #import <Foundation/Foundation.h>
+#import "RNSVGGlyphPoint.h"
 #import "RNSVGGroup.h"
 #import "RNSVGTextAnchor.h"
-#import "RNSVGGlyphContext.h"
 
 @interface RNSVGText : RNSVGGroup
 
@@ -20,14 +20,15 @@
 @property (nonatomic, strong) NSString *positionY;
 @property (nonatomic, strong) NSDictionary *font;
 
-- (RNSVGText *)getTextRoot;
-- (void)releaseCachedPath;
-- (CGPathRef)getGroupPath:(CGContextRef)context;
+@property (nonatomic, assign) CGFloat lastX;
+@property (nonatomic, assign) CGFloat lastY;
+@property (nonatomic, assign) NSUInteger lastIndex;
 
-- (RNSVGGlyphContext *)getGlyphContext;
-- (void)pushGlyphContext;
-- (void)popGlyphContext;
-- (CTFontRef)getFontFromContext;
-- (CGPoint)getGlyphPointFromContext:(CGPoint)offset glyphWidth:(CGFloat)glyphWidth;
+- (CTFontRef)getComputedFont;
+- (RNSVGGlyphPoint)getComputedGlyphPoint:(NSUInteger *)index glyphOffset:(CGPoint)glyphOffset;
+- (RNSVGText *)getTextRoot;
+- (CGPathRef)getGroupPath:(CGContextRef)context;
+- (void)resetTextPathAttributes;
+- (void)traverseTextSuperviews:(BOOL (^)(__kindof RNSVGText *node))block;
 
 @end
