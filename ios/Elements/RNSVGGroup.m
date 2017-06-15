@@ -12,8 +12,7 @@
 
 - (void)renderLayerTo:(CGContextRef)context
 {
-    [self clip:context];
-    [self renderGroupTo:context];
+    [self renderLayerToWithTransform:context transform:CGAffineTransformIdentity];
 }
 
 - (void)renderGroupTo:(CGContextRef)context
@@ -23,22 +22,22 @@
         if (node.responsible && !svg.responsible) {
             svg.responsible = YES;
         }
-        
+
         if ([node isKindOfClass:[RNSVGRenderable class]]) {
             [(RNSVGRenderable*)node mergeProperties:self];
         }
-        
+
         [node renderTo:context];
-        
+
         if ([node isKindOfClass:[RNSVGRenderable class]]) {
             [(RNSVGRenderable*)node resetProperties];
         }
-        
+
         return YES;
     }];
 }
 
-- (void)renderPathTo:(CGContextRef)context
+- (void)pathRenderLayerTo:(CGContextRef)context
 {
     [super renderLayerTo:context];
 }
@@ -61,7 +60,7 @@
     if (hitSelf) {
         return hitSelf;
     }
-    
+
     CGAffineTransform matrix = CGAffineTransformConcat(self.matrix, transform);
 
     CGPathRef clip = [self getClipPath];
@@ -69,26 +68,26 @@
         CGPathRef transformedClipPath = CGPathCreateCopyByTransformingPath(clip, &matrix);
         BOOL insideClipPath = CGPathContainsPoint(clip, nil, point, self.clipRule == kRNSVGCGFCRuleEvenodd);
         CGPathRelease(transformedClipPath);
-        
+
         if (!insideClipPath) {
             return nil;
         }
-        
+
     }
-    
+
     for (RNSVGNode *node in [self.subviews reverseObjectEnumerator]) {
         if (![node isKindOfClass:[RNSVGNode class]]) {
             continue;
         }
-        
+
         if (event) {
             node.active = NO;
         } else if (node.active) {
             return node;
         }
-        
+
         UIView *hitChild = [node hitTest: point withEvent:event withTransform:matrix];
-        
+
         if (hitChild) {
             node.active = YES;
             return (node.responsible || (node != hitChild)) ? hitChild : self;
