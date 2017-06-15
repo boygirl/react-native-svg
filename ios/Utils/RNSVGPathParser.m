@@ -385,7 +385,7 @@
         _penY = _penDownY;
         _penDownSet = NO;
         CGPathCloseSubpath(path);
-        [_bezierCurves addObject: @[_lastStartPoint, _lastStartPoint, _lastStartPoint]];
+        [_bezierCurves addObject: @[];
     }
 }
 
